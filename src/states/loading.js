@@ -41,6 +41,6 @@ TemplateGame.Loading.preload = function () {
   /**
   * Replace with your own in-game assets to load.
   **/
-  this.addImage('kiwiName', 'assets/img/kiwijs-name.png')
+  //this.addImage('kiwiName', 'assets/img/kiwijs-name.png')
   this.addSpriteSheet('icons', 'assets/img/kiwijs-icons.png', 100, 90)
 }
