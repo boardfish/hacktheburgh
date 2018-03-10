@@ -18,40 +18,54 @@ TemplateGame.Play.create = function () {
   /*
   * Replace with your own game creation code here...
   */
-  this.name = new Kiwi.GameObjects.StaticImage(
-    this, this.textures.kiwiName, 10, 10)
-
-  this.heart = new Kiwi.GameObjects.Sprite(
-    this, this.textures.icons, 10, 10)
-  this.heart.cellIndex = 8
-  this.heart.y = this.game.stage.height - this.heart.height - 10
-
   this.shield = new Kiwi.GameObjects.Sprite(
     this, this.textures.icons, 200, 200)
   this.shield.cellIndex = 9
   this.shield.y = this.game.stage.height * 0.5 - this.shield.height * 0.5
   this.shield.x = this.game.stage.width * 0.5 - this.shield.width * 0.5
 
-  this.crown = new Kiwi.GameObjects.Sprite(
-    this, this.textures.icons, 10, 10)
-  this.crown.cellIndex = 10
-  this.crown.x = this.game.stage.width - this.crown.width - 10
-  this.crown.y = this.game.stage.height - this.crown.height - 10
+  this.background = new Kiwi.GameObjects.StaticImage(this, this.textures.grid, 0, 0)
+  this.addChild(this.background)
 
-  this.bomb = new Kiwi.GameObjects.Sprite(
-    this, this.textures.icons, 0, 10)
-  this.bomb.x = this.game.stage.width - this.bomb.width - 10
+  this.step = 3
+
+  this.upKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.UP, true)
+  this.downKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.DOWN, true)
+  this.rightKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.RIGHT, true)
+  this.leftKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.LEFT, true)
 
   // Add the GameObjects to the stage
-  this.addChild(this.heart)
-  this.addChild(this.crown)
   this.addChild(this.shield)
-  this.addChild(this.bomb)
-  this.addChild(this.name)
+  // Debug object - static second shield
+  this.shield2 = new Kiwi.GameObjects.Sprite(
+    this, this.textures.icons, 200, 200)
+  this.shield2.cellIndex = 9
+  this.shield2.y = (this.game.stage.height * 0.5 - this.shield.height * 0.5) + 5
+  this.shield2.x = (this.game.stage.width * 0.5 - this.shield.width * 0.5) + 5
+  this.addChild(this.shield2)
 }
 
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
-  this.shield.rotation += this.game.time.clock.rate * 0.01
+  // Move the player with the arrow keys.
+  if (this.leftKey.isDown) {
+    this.shield.x -= this.step
+  }
+  if (this.rightKey.isDown) {
+    this.shield.x += this.step
+  }
+  if (this.upKey.isDown) {
+    this.shield.y -= this.step
+  }
+  if (this.downKey.isDown) {
+    this.shield.y += this.step
+  }
+
+  var playerOffsetX = this.shield.width * 0.5
+  var playerOffsetY = this.shield.height * 0.5
+
+  // Set the cameras position to that of the player.
+  this.game.cameras.defaultCamera.transform.x = -1 * this.shield.x + this.game.stage.width * 0.5 - playerOffsetX
+  this.game.cameras.defaultCamera.transform.y = -1 * this.shield.y + this.game.stage.height * 0.5 - playerOffsetY
 }

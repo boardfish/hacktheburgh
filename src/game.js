@@ -13,7 +13,7 @@ var gameOptions = {
   height: 600
 }
 
-var game = new Kiwi.Game('content', 'TemplateGame', null, gameOptions)
+var game = new Kiwi.Game('content', 'SheffBall', null, gameOptions)
 
 // Add all the States we are going to use.
 game.states.addState(TemplateGame.Loading)
