@@ -8,12 +8,21 @@ TemplateGame.Play = new Kiwi.State('Play')
 * It is the state where majority of the functionality occurs 'in-game' occurs.
 */
 
+TemplateGame.Play.preload = function () {
+
+  this.addJSON( 'tilemap', 'tilemap.json' )
+  this.addSpriteSheet( 'tiles', 'tileset.png', 32, 32 )
+
+}
 /**
 * This create method is executed when a Kiwi state has finished loading
 * any resources that were required to load.
 */
 TemplateGame.Play.create = function () {
   Kiwi.State.prototype.create.call(this)
+
+  this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap( this, 'tilemap', this.textures.tiles )
+
 
   /*
   * Replace with your own game creation code here...
@@ -43,6 +52,8 @@ TemplateGame.Play.create = function () {
   this.bomb.x = this.game.stage.width - this.bomb.width - 10
 
   // Add the GameObjects to the stage
+  this.addChild( this.tilemap.layers[0] );
+  this.addChild( this.tilemap.layers[1] );
   this.addChild(this.heart)
   this.addChild(this.crown)
   this.addChild(this.shield)
