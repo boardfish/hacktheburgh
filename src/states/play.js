@@ -1,4 +1,4 @@
-var TemplateGame = TemplateGame || {} 
+var TemplateGame = TemplateGame || {}
 
 //var mouse = this.game.input.mouse
 
@@ -70,5 +70,5 @@ TemplateGame.Play.update = function() {
 point =  new Kiwi.Geom.Point( this.game.input.x, this.game.input.y )
 shieldPoint = new Kiwi.Geom.Point( this.shield.x+this.shield.width/2 , this.shield.y +this.shield.height/2 )
 	Kiwi.State.prototype.update.call( this )
-	this.shield.rotation =  shieldPoint.angleTo( point ) +90
+	this.shield.rotation =  shieldPoint.angleTo( point ) +1.5708
 }
