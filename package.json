@@ -1,0 +1,25 @@
+{
+  "name": "shefball",
+  "version": "1.0.0",
+  "description": "dodgeball game",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boardfish/hacktheburgh.git"
+  },
+  "author": "hacksheffield",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boardfish/hacktheburgh/issues"
+  },
+  "homepage": "https://github.com/boardfish/hacktheburgh#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
