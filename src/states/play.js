@@ -2,6 +2,12 @@ var TemplateGame = TemplateGame || {}
 
 TemplateGame.Play = new Kiwi.State('Play')
 
+TemplateGame.Play.preload = function() {
+	this.addJSON('tilemap', 'tilemap.json');
+	this.addSpriteSheet('tiles', 'tileset.png', 32, 32);
+}
+
+
 /**
 * The PlayState in the core state that is used in the game.
 *
@@ -13,7 +19,12 @@ TemplateGame.Play = new Kiwi.State('Play')
 * any resources that were required to load.
 */
 TemplateGame.Play.create = function () {
-  Kiwi.State.prototype.create.call(this)
+  Kiwi.State.prototype.preload.call(this);
+  this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
+
+	this.addChild(this.tilemap.layers[0]);
+	this.addChild(this.tilemap.layers[1]);
+
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 150 // pixels/second
   this.NUMBER_OF_BALLS = 1
@@ -153,3 +164,5 @@ TemplateGame.Play.update = function () {
   // Debug - draw debug canvas.
   // this.player.box.draw(this.game.stage.dctx)
 }
+
+var game = new Kiwi.Game(null, 'New Tilemap Game', TemplateGame.Play);
