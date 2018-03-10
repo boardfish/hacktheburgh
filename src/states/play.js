@@ -1,4 +1,5 @@
 var TemplateGame = TemplateGame || {}
+var key;
 
 TemplateGame.Play = new Kiwi.State('Play')
 
@@ -22,8 +23,15 @@ TemplateGame.Play.create = function () {
   Kiwi.State.prototype.preload.call(this);
   this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
 
-	this.addChild(this.tilemap.layers[0]);
-	this.addChild(this.tilemap.layers[1]);
+
+
+
+
+
+
+
+
+
 
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 150 // pixels/second
@@ -37,7 +45,16 @@ TemplateGame.Play.create = function () {
   // Set the pivot point to the center of the player
   this.player.anchorPointX = this.player.width * 0.5
   this.player.anchorPointY = this.player.height * 0.5
+		this.player.box.hitbox = new Kiwi.Geom.Rectangle( 48, 0, 50, 50 );
+		this.player.physics = this.player.components.add( new Kiwi.Components.ArcadePhysics( this.player, this.player.box ) );
 
+		for( var i = 0; i < this.tilemap.layers.length; i++ ) {
+			this.addChild( this.tilemap.layers[ i ] );
+		}
+
+		for(var i = 1; i < this.tilemap.tileTypes.length; i++) {
+			this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY;
+		}
   this.ballPool = new Kiwi.Group(this)
   this.addChild(this.ballPool)
   for (var i = 0; i < this.NUMBER_OF_BALLS; i++) {
@@ -122,22 +139,30 @@ TemplateGame.Play.angleToPointer = function ( from ) {
 
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
+	this.checkCollision();
 
+
+
+	//this.game.physics.arcade.collide(player, this.tilemap.layers[1] );
   // Debug - clear canvas from last frame.
   //this.game.stage.clearDebugCanvas()
 
   // Move the player with the arrow keys.
   if (this.leftKey.isDown) {
     this.player.x -= this.step
+		key=0
   }
   if (this.rightKey.isDown) {
     this.player.x += this.step
+		key=1
   }
   if (this.upKey.isDown) {
     this.player.y -= this.step
+		key=2
   }
   if (this.downKey.isDown) {
     this.player.y += this.step
+		key=3
   }
   this.player.rotation = this.angleToPointer(this.player)
 
@@ -163,6 +188,30 @@ TemplateGame.Play.update = function () {
 
   // Debug - draw debug canvas.
   // this.player.box.draw(this.game.stage.dctx)
+for(var i = 1; i < this.tilemap.tileTypes.length; i++) {
+      this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY
+}
+}
+
+TemplateGame.Play.checkCollision = function () {
+
+	if(this.tilemap.layers[1].physics.overlapsTiles( this.player, true )){
+		switch(key){
+			case 0:
+					this.player.x += this.step
+			break
+			case 1:
+			this.player.x -= this.step
+			break
+			case 2:
+			this.player.y += this.step
+			break
+			case 3:
+			this.player.y -= this.step
+			break
+		}
+	}
+
 }
 
 var game = new Kiwi.Game(null, 'New Tilemap Game', TemplateGame.Play);
