@@ -17,12 +17,17 @@ TemplateGame.Play.create = function () {
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 150 // pixels/second
   this.NUMBER_OF_BALLS = 1
-  // this.game.stage.createDebugCanvas()
+  this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
   this.player.cellIndex = 9
   this.player.y = this.game.stage.height * 0.5 - this.player.height * 0.5
   this.player.x = this.game.stage.width * 0.5 - this.player.width * 0.5
+  this.npc = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
+  this.npc.cellIndex = 0
+  this.npc.y = (this.game.stage.height * 0.5 - this.npc.height * 0.5) + 100
+  this.npc.x = (this.game.stage.width * 0.5 - this.npc.width * 0.5) + 100
+  this.addChild(this.npc)
   // Set the pivot point to the center of the player
   this.player.anchorPointX = this.player.width * 0.5
   this.player.anchorPointY = this.player.height * 0.5
@@ -31,7 +36,7 @@ TemplateGame.Play.create = function () {
   this.addChild(this.ballPool)
   for (var i = 0; i < this.NUMBER_OF_BALLS; i++) {
     // Create each ball and add it to the group.
-    var ball = new Kiwi.GameObjects.Sprite(this, this.textures.circle, -100, -100)
+    var ball = new Kiwi.GameObjects.Sprite(this, this.textures.circle, 40, 40)
     this.ballPool.addChild(ball)
 
     // Set the pivot point to the center of the ball
@@ -75,8 +80,15 @@ TemplateGame.Play.shootBall = function () {
   this.revive(ball)
 
     // Set the ball position to the player position.
-  ball.x = this.player.x
-  ball.y = this.player.y
+  var ballOffsetX = ball.width * 0.5
+  var ballOffsetY = ball.height * 0.5
+  var playerOffsetX = this.player.width * 0.5
+  var playerOffsetY = this.player.height * 0.5
+  this.centerPoint = new Kiwi.Geom.Point(
+    this.player.x + playerOffsetX,
+    this.player.y + playerOffsetY )
+  ball.x = this.centerPoint.x - ballOffsetX
+  ball.y = this.centerPoint.y - ballOffsetY
 
   ball.rotation = this.player.rotation
 
@@ -107,20 +119,22 @@ TemplateGame.Play.checkBallPosition = function (ball) {
 }
 
 TemplateGame.Play.angleToPointer = function () {
-    this.mousePoint = new Kiwi.Geom.Point(this.mouse.x, this.mouse.y)
-    this.centerPoint = new Kiwi.Geom.Point(
-      this.player.x + this.game.cameras.defaultCamera.transform.x,
-      this.player.y + this.game.cameras.defaultCamera.transform.y, )
-    console.log(this.mousePoint.x, this.centerPoint.x)
-    console.log(this.mousePoint.y, this.centerPoint.y)
-    return this.centerPoint.angleTo(this.mousePoint)
+  var playerOffsetX = this.player.width * 0.5
+  var playerOffsetY = this.player.height * 0.5
+  this.mousePoint = new Kiwi.Geom.Point(this.mouse.x, this.mouse.y)
+  this.centerPoint = new Kiwi.Geom.Point(
+    this.player.x + this.game.cameras.defaultCamera.transform.x + playerOffsetX,
+    this.player.y + this.game.cameras.defaultCamera.transform.y + playerOffsetY, )
+  console.log(this.mousePoint.x, this.centerPoint.x)
+  console.log(this.mousePoint.y, this.centerPoint.y)
+  return this.centerPoint.angleTo(this.mousePoint)
 }
 
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
   // Debug - clear canvas from last frame.
-  //this.game.stage.clearDebugCanvas()
+  this.game.stage.clearDebugCanvas()
 
   // Move the player with the arrow keys.
   if (this.leftKey.isDown) {
@@ -145,9 +159,14 @@ TemplateGame.Play.update = function () {
 
   // Check if player is intersecting with ball.
   var ball = this.getFirstBall(true)
-  if (ball) {
-    var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, this.player.box.bounds)
-    console.log(overlapped.result)
+  if (ball !== null && this.npc.exists) {
+      var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, this.npc.box.bounds)
+      console.log(overlapped.result)
+      if (overlapped) {
+        this.npc.destroy()
+      } else {
+        console.log(ball.x)
+      }
   }
 
   var playerOffsetX = this.player.width * 0.5
@@ -158,5 +177,5 @@ TemplateGame.Play.update = function () {
   this.game.cameras.defaultCamera.transform.y = -1 * this.player.y + this.game.stage.height * 0.5 - playerOffsetY
 
   // Debug - draw debug canvas.
-  // this.player.box.draw(this.game.stage.dctx)
+  this.player.box.draw(this.game.stage.dctx)
 }
