@@ -52,6 +52,7 @@ TemplateGame.Play.create = function () {
   this.downKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.DOWN, true)
   this.rightKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.RIGHT, true)
   this.leftKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.LEFT, true)
+  this.mouse = this.game.input.mouse
 }
 
 TemplateGame.Play.shootBall = function () {
@@ -105,8 +106,14 @@ TemplateGame.Play.checkBallPosition = function (ball) {
   }
 }
 
-TemplateGame.Play.angleToPointer = function ( from ) {
-    return Math.atan2( this.game.input.y - from.y, this.game.input.x - from.x );
+TemplateGame.Play.angleToPointer = function () {
+    this.mousePoint = new Kiwi.Geom.Point(this.mouse.x, this.mouse.y)
+    this.centerPoint = new Kiwi.Geom.Point(
+      this.player.x + this.game.cameras.defaultCamera.transform.x,
+      this.player.y + this.game.cameras.defaultCamera.transform.y, )
+    console.log(this.mousePoint.x, this.centerPoint.x)
+    console.log(this.mousePoint.y, this.centerPoint.y)
+    return this.centerPoint.angleTo(this.mousePoint)
 }
 
 TemplateGame.Play.update = function () {
@@ -128,7 +135,7 @@ TemplateGame.Play.update = function () {
   if (this.downKey.isDown) {
     this.player.y += this.step
   }
-  this.player.rotation = this.angleToPointer(this.player)
+  this.player.rotation = this.angleToPointer()
 
   if (this.game.input.mouse.isDown) {
     this.shootBall()
