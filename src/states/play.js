@@ -17,7 +17,7 @@ TemplateGame.Play.create = function () {
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 150 // pixels/second
   this.NUMBER_OF_BALLS = 1
-  this.game.stage.createDebugCanvas()
+  // this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
   this.player.cellIndex = 9
@@ -134,7 +134,7 @@ TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
   // Debug - clear canvas from last frame.
-  this.game.stage.clearDebugCanvas()
+  // this.game.stage.clearDebugCanvas()
 
   // Move the player with the arrow keys.
   if (this.leftKey.isDown) {
@@ -177,5 +177,5 @@ TemplateGame.Play.update = function () {
   this.game.cameras.defaultCamera.transform.y = -1 * this.player.y + this.game.stage.height * 0.5 - playerOffsetY
 
   // Debug - draw debug canvas.
-  this.player.box.draw(this.game.stage.dctx)
+  // this.player.box.draw(this.game.stage.dctx)
 }
