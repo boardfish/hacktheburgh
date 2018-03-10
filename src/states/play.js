@@ -14,20 +14,20 @@ TemplateGame.Play = new Kiwi.State('Play')
 */
 TemplateGame.Play.create = function () {
   Kiwi.State.prototype.create.call(this)
-  // this.game.stage.createDebugCanvas()
+  this.game.stage.createDebugCanvas()
 
-  this.shield = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
-  this.shield.cellIndex = 9
-  this.shield.y = this.game.stage.height * 0.5 - this.shield.height * 0.5
-  this.shield.x = this.game.stage.width * 0.5 - this.shield.width * 0.5
+  this.player = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
+  this.player.cellIndex = 9
+  this.player.y = this.game.stage.height * 0.5 - this.player.height * 0.5
+  this.player.x = this.game.stage.width * 0.5 - this.player.width * 0.5
 
-  this.bomb = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
-  this.bomb.cellIndex = 0
-  this.bomb.y = (this.game.stage.height * 0.5 - this.bomb.height * 0.5) + 200
-  this.bomb.x = (this.game.stage.width * 0.5 - this.bomb.width * 0.5) + 200
+  this.ball = new Kiwi.GameObjects.Sprite(this, this.textures.icons, 200, 200)
+  this.ball.cellIndex = 0
+  this.ball.y = (this.game.stage.height * 0.5 - this.ball.height * 0.5) + 200
+  this.ball.x = (this.game.stage.width * 0.5 - this.ball.width * 0.5) + 200
 
-  this.addChild(this.bomb)
-  this.addChild(this.shield)
+  this.addChild(this.ball)
+  this.addChild(this.player)
 
   this.step = 3
 
@@ -41,34 +41,34 @@ TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
   // Debug - clear canvas from last frame.
-  // this.game.stage.clearDebugCanvas()
+  this.game.stage.clearDebugCanvas()
 
   // Move the player with the arrow keys.
   if (this.leftKey.isDown) {
-    this.shield.x -= this.step
+    this.player.x -= this.step
   }
   if (this.rightKey.isDown) {
-    this.shield.x += this.step
+    this.player.x += this.step
   }
   if (this.upKey.isDown) {
-    this.shield.y -= this.step
+    this.player.y -= this.step
   }
   if (this.downKey.isDown) {
-    this.shield.y += this.step
+    this.player.y += this.step
   }
 
   // Check if player is intersecting with ball.
-  var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(this.shield.box.bounds, this.bomb.box.bounds)
+  var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(this.ball.box.bounds, this.player.box.bounds)
   console.log(overlapped.result)
 
-  var playerOffsetX = this.shield.width * 0.5
-  var playerOffsetY = this.shield.height * 0.5
+  var playerOffsetX = this.player.width * 0.5
+  var playerOffsetY = this.player.height * 0.5
 
   // Set the cameras position to that of the player.
-  this.game.cameras.defaultCamera.transform.x = -1 * this.shield.x + this.game.stage.width * 0.5 - playerOffsetX
-  this.game.cameras.defaultCamera.transform.y = -1 * this.shield.y + this.game.stage.height * 0.5 - playerOffsetY
+  this.game.cameras.defaultCamera.transform.x = -1 * this.player.x + this.game.stage.width * 0.5 - playerOffsetX
+  this.game.cameras.defaultCamera.transform.y = -1 * this.player.y + this.game.stage.height * 0.5 - playerOffsetY
 
   // Debug - draw debug canvas.
-  // this.shield.box.draw(this.game.stage.dctx)
-  // this.bomb.box.draw(this.game.stage.dctx)
+  this.player.box.draw(this.game.stage.dctx)
+  this.ball.box.draw(this.game.stage.dctx)
 }
