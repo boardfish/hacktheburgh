@@ -32,15 +32,5 @@
         window.killed = false
       }
     })
-    window.socket.on('balllaunch', function (data) {
-      //ball.
-      var ball = this.getFirstBall(false)
-      if (ball !== null) {
-        ball.alive = true
-        ball.physics.velocity.x = data.x
-        ball.physics.velocity.y = data.y
-        ball.rotation = data.rotation
-      }
-    })
   </script>
 </body>

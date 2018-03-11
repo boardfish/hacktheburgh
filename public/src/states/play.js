@@ -131,9 +131,6 @@ TemplateGame.Play.checkBallPosition = function (ball) {
   var oldVelY = ball.physics.velocity.y
   var newVelY = oldVelY - Math.sin(ball.rotation)
   ball.physics.velocity.y = newVelY <= 1 && newVelY >= -1 ? 0 : newVelY
-  if (ball.physics.velocity.y === 0 && ball.physics.velocity.x === 0) {
-    ball.alive = false
-  }
 }
 
 TemplateGame.Play.angleToPointer = function () {
@@ -213,7 +210,6 @@ TemplateGame.Play.update = function () {
         window.socket.emit('kill', {
           id: Object.keys(window.players)[i]
         })
-        ball.alive = false
       }
     }
   }
