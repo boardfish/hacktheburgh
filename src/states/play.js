@@ -52,7 +52,7 @@ TemplateGame.Play.create = function () {
 			this.addChild( this.tilemap.layers[ i ] );
 		}
 
-		for(var i = 1; i < this.tilemap.tileTypes.length; i++) {
+		for(var i = 2; i < this.tilemap.tileTypes.length; i++) {
 			this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY;
 		}
   this.ballPool = new Kiwi.Group(this)
@@ -210,6 +210,7 @@ TemplateGame.Play.checkCollision = function () {
 			this.player.y -= this.step
 			break
 		}
+
 	}
 
 }
