@@ -131,6 +131,9 @@ TemplateGame.Play.checkBallPosition = function (ball) {
   var oldVelY = ball.physics.velocity.y
   var newVelY = oldVelY - Math.sin(ball.rotation)
   ball.physics.velocity.y = newVelY <= 1 && newVelY >= -1 ? 0 : newVelY
+  if (ball.physics.velocity.y === 0 && ball.physics.velocity.x === 0) {
+    ball.alive = false
+  }
 }
 
 TemplateGame.Play.angleToPointer = function () {
@@ -180,7 +183,7 @@ TemplateGame.Play.update = function () {
       y: this.player.y,
       rotation: this.player.rotation
     })
-    console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
+    // console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
 
   if (this.game.input.mouse.isDown) {
@@ -205,10 +208,12 @@ TemplateGame.Play.update = function () {
     for (var i = players.length - 1; i >= 0; i--) {
       var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, players[i].box.bounds)
       if (overlapped.result) {
+        console.log("Emitted kill for", Object.keys(window.players)[i])
         window.killed = true
         window.socket.emit('kill', {
           id: Object.keys(window.players)[i]
         })
+        ball.alive = false
       }
     }
   }
