@@ -1,4 +1,5 @@
 var TemplateGame = TemplateGame || {}
+var angle
 
 TemplateGame.Play = new Kiwi.State('Play')
 
@@ -19,12 +20,14 @@ TemplateGame.Play.preload = function() {
 TemplateGame.Play.create = function () {
   Kiwi.State.prototype.preload.call(this);
 this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
+this.tilemap.scale = 2
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
   // this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
+  this.player.scale = 0.6
   this.player.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
   this.player.y = this.game.stage.height * Math.random()
   this.player.x = this.game.stage.width * Math.random()
@@ -114,7 +117,7 @@ TemplateGame.Play.shootBall = function () {
   var playerOffsetX = this.player.width * 0.5
   var playerOffsetY = this.player.height * 0.5
   this.centerPoint = new Kiwi.Geom.Point(this.player.x + playerOffsetX, this.player.y + playerOffsetY)
-  ball.rotation = this.player.rotation - Math.PI / 2
+  ball.rotation = angle - Math.PI / 2
   ball.x = this.centerPoint.x - ballOffsetX + Math.cos(ball.rotation) * 40
   ball.y = this.centerPoint.y - ballOffsetY + Math.sin(ball.rotation) * 40
 
@@ -266,11 +269,7 @@ TemplateGame.Play.update = function () {
     }
     key=3
   }
-  var lastAngle = this.player.rotation
-  this.player.rotation = this.angleToPointer() + Math.PI / 2
-  if (this.player.rotation !== lastAngle) {
-    playerMoved = true
-  }
+	angle = this.angleToPointer() + Math.PI / 2
 
   if (playerMoved) {
     window.socket.emit('playermove', {
@@ -319,9 +318,7 @@ TemplateGame.Play.update = function () {
     }
   }
 if(ball!=undefined){
-  console.log("defined")
   if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )){
-    console.log("Intersect")
     ball.physics.velocity.x=0
     ball.physics.velocity.y=0
   }
