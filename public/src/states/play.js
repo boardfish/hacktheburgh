@@ -251,14 +251,14 @@ if(ball!=undefined){
 
     //ball.physics.velocity.x = 0;
     //ball.physics.velocity.y = 0;
-      ball.physics.velocity.x = -ball.physics.velocity.x
+      ball.physics.velocity.y = -ball.physics.velocity.y
 
     }
 
     //}
     else if (this.tilemap.layers[2].physics.overlapsTiles( ball, true )
     && Math.abs(ball.physics.velocity.y) > Math.abs(ball.physics.velocity.x)) {
-      ball.physics.velocity.y = -ball.physics.velocity.y
+      ball.physics.velocity.x = -ball.physics.velocity.x
 
   }
 
