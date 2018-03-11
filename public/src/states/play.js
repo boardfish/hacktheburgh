@@ -321,7 +321,7 @@ TemplateGame.Play.update = function () {
   this.ballPool.forEach(this, this.checkBallPosition)
 
   // Check if player is intersecting with ball.
-  var ball = this.getFirstBall(true)
+  var ball = this.getFirstBall(false)
   if (ball !== null) {
     var players = this.playerPool.members
 
