@@ -3,10 +3,10 @@ var angle
 
 TemplateGame.Play = new Kiwi.State('Play')
 
-TemplateGame.Play.preload = function() {
-	this.addJSON('tilemap', 'tilemap.json');
-	this.addSpriteSheet('tiles', 'tileset.png', 32, 32);
-  this.addAudio('music', 'throw.mp3');
+TemplateGame.Play.preload = function () {
+  this.addJSON('tilemap', 'tilemap.json')
+  this.addSpriteSheet('tiles', 'tileset.png', 32, 32)
+  this.addAudio('music', 'throw.mp3')
 }
 
 /**
@@ -19,17 +19,16 @@ TemplateGame.Play.preload = function() {
 * any resources that were required to load.
 */
 TemplateGame.Play.create = function () {
-  Kiwi.State.prototype.preload.call(this);
-this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
-this.tilemap.scale = 2
+  Kiwi.State.prototype.preload.call(this)
+  this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles)
+  this.tilemap.scale = 2
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
   // this.game.stage.createDebugCanvas()
 
-  //create addAudio
-  this.music = new Kiwi.Sound.Audio(this.game, 'music', 1, false);
-
+  // create addAudio
+  this.music = new Kiwi.Sound.Audio(this.game, 'music', 1, false)
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.scale = 0.6
@@ -43,15 +42,14 @@ this.tilemap.scale = 2
 
   this.player.animation.play('idle')
 
-  for( var i = 0; i < this.tilemap.layers.length; i++ ) {
-			this.addChild( this.tilemap.layers[ i ] );
-		}
+  for (var i = 0; i < this.tilemap.layers.length; i++) {
+    this.addChild(this.tilemap.layers[ i ])
+  }
 
-		for(var i = 2; i < this.tilemap.tileTypes.length; i++) {
-			this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY;
-		}
-      this.addChild(this.player)
-
+  for (var i = 2; i < this.tilemap.tileTypes.length; i++) {
+    this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY
+  }
+  this.addChild(this.player)
 
   const NUMBER_OF_PLAYERS = 5
   this.playerPool = new Kiwi.Group(this)
@@ -63,7 +61,6 @@ this.tilemap.scale = 2
     npc.x = -1000
     this.playerPool.addChild(npc)
     npc.animation.play('run')
-
   }
 
   // Set the pivot point to the center of the player
@@ -86,8 +83,6 @@ this.tilemap.scale = 2
 
     // Set its initial state to "dead".
     ball.alive = false
-
-
   }
 
   this.step = 3
@@ -98,7 +93,7 @@ this.tilemap.scale = 2
   this.leftKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.LEFT, true)
   this.mouse = this.game.input.mouse
 
-  this.player.y += 100*this.step
+  this.player.y += 100 * this.step
 }
 
 TemplateGame.Play.shootBall = function () {
@@ -113,7 +108,7 @@ TemplateGame.Play.shootBall = function () {
   // Get a dead ball from the pool
   var ball = this.getFirstBall(false)
 
-  this.music.play();
+  this.music.play()
 
   // If there aren't any balls available then don't shoot
   if (ball === null || ball === undefined) return
@@ -210,7 +205,7 @@ TemplateGame.Play.getFirstBall = function (alive) {
 TemplateGame.Play.checkBallPosition = function (ball) {
   if (ball.x > this.game.stage.width || ball.x < 0 ||
       ball.y > this.game.stage.height || ball.y < 0) {
-    //ball.alive = false
+    // ball.alive = false
   }
 
   var oldVelX = ball.physics.velocity.x
@@ -220,9 +215,7 @@ TemplateGame.Play.checkBallPosition = function (ball) {
   var oldVelY = ball.physics.velocity.y
   var newVelY = oldVelY - Math.sin(ball.rotation)
   ball.physics.velocity.y = newVelY <= 2 && newVelY >= -2 ? 0 : newVelY
-
-  var vel = ball.physics.velocity
-  if (vel.x === 0 && vel.y === 0) {
+  if (ball.physics.velocity.y === 0 && ball.physics.velocity.x === 0) {
     ball.alive = false
   }
 }
@@ -255,7 +248,7 @@ TemplateGame.Play.update = function () {
     if (!this.checkCollision(this.leftKey)) {
       this.player.x += this.step
     }
-    key=0
+    key = 0
   }
   if (this.checkCollision(this.rightKey)) {
     this.player.x += this.step
@@ -264,7 +257,7 @@ TemplateGame.Play.update = function () {
     if (!this.checkCollision(this.rightKey)) {
       this.player.x -= this.step
     }
-    key=1
+    key = 1
   }
   if (this.checkCollision(this.upKey)) {
     this.player.y -= this.step
@@ -273,16 +266,26 @@ TemplateGame.Play.update = function () {
     if (!this.checkCollision(this.upKey)) {
       this.player.y += this.step
     }
-    key=2
+    key = 2
   }
   if (this.checkCollision(this.downKey)) {
     this.player.y += this.step
-		playerMoved = true
-		this.player.animation.play('rundown')
+    this.player.animation.play('rundown')
     if (!this.checkCollision(this.downKey)) {
       this.player.y -= this.step
     }
-    key=3
+    key = 3
+    playerMoved = true
+  }
+
+  if (playerMoved) {
+    window.socket.emit('playermove', {
+      id: window.socket.id,
+      x: this.player.x,
+      y: this.player.y,
+      rotation: this.player.rotation
+    })
+    // console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
 	angle = this.angleToPointer() + Math.PI / 2
 
@@ -323,37 +326,30 @@ TemplateGame.Play.update = function () {
       var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, players[i].box.bounds)
       if (overlapped.result) {
         console.log('Emitted kill for', Object.keys(window.players)[i])
+        window.killed = true
         window.socket.emit('kill', {
           id: Object.keys(window.players)[i]
         })
         this.playerPool.members[i].destroy()
         delete window.players[Object.keys(window.players)[i]]
-
+        ball.alive = false
       }
     }
   }
-if(ball!=undefined){
-
-
-  if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )
-      && Math.abs(ball.physics.velocity.x) > Math.abs(ball.physics.velocity.y)){
-
-    //ball.physics.velocity.x = 0;
-    //ball.physics.velocity.y = 0;
+  if (ball != undefined) {
+    if (this.tilemap.layers[2].physics.overlapsTiles(ball, true)
+      && Math.abs(ball.physics.velocity.x) > Math.abs(ball.physics.velocity.y)) {
+    // ball.physics.velocity.x = 0;
+    // ball.physics.velocity.y = 0;
       ball.physics.velocity.y = -ball.physics.velocity.y
-
     }
 
-    //}
-    else if (this.tilemap.layers[2].physics.overlapsTiles( ball, true )
+    // }
+    else if (this.tilemap.layers[2].physics.overlapsTiles(ball, true)
     && Math.abs(ball.physics.velocity.y) > Math.abs(ball.physics.velocity.x)) {
       ball.physics.velocity.x = -ball.physics.velocity.x
-
+    }
   }
-
-}
-
-
 
   var playerOffsetX = this.player.width * 0.5
   var playerOffsetY = this.player.height * 0.5
@@ -366,10 +362,9 @@ if(ball!=undefined){
   // this.player.box.draw(this.game.stage.dctx)
 }
 TemplateGame.Play.checkCollision = function (key) {
-	if(this.tilemap.layers[2].physics.overlapsTiles( this.player, true )){
+  if (this.tilemap.layers[2].physics.overlapsTiles(this.player, true)) {
     return false
-
   }
   return key.isDown
 }
-var game = new Kiwi.Game('game-container', 'Play Music', state, gameOptions);
+var game = new Kiwi.Game('game-container', 'Play Music', state, gameOptions)
