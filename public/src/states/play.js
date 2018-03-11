@@ -299,7 +299,7 @@ TemplateGame.Play.update = function () {
     // console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
 
-  if (this.game.input.mouse.isDown) {
+  if (this.game.input.mouse.isDown) !== null) {
     this.shootBall()
     console.log("Shoot")
   } else {
