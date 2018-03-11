@@ -241,6 +241,7 @@ TemplateGame.Play.update = function () {
 
   var playerMoved = false
   // Move the player with the arrow keys.
+  var playerMoved = false
   if (this.checkCollision(this.leftKey)) {
     this.player.x -= this.step
 		playerMoved = true
@@ -249,6 +250,7 @@ TemplateGame.Play.update = function () {
       this.player.x += this.step
     }
     key = 0
+    playerMoved = true
   }
   if (this.checkCollision(this.rightKey)) {
     this.player.x += this.step
@@ -258,6 +260,7 @@ TemplateGame.Play.update = function () {
       this.player.x -= this.step
     }
     key = 1
+    playerMoved = true
   }
   if (this.checkCollision(this.upKey)) {
     this.player.y -= this.step
@@ -267,6 +270,7 @@ TemplateGame.Play.update = function () {
       this.player.y += this.step
     }
     key = 2
+    playerMoved = true
   }
   if (this.checkCollision(this.downKey)) {
     this.player.y += this.step
@@ -299,7 +303,7 @@ TemplateGame.Play.update = function () {
     // console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
 
-  if (this.game.input.mouse.isDown) !== null) {
+  if (this.game.input.mouse.isDown) {
     this.shootBall()
     console.log("Shoot")
   } else {
