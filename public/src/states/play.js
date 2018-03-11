@@ -14,7 +14,6 @@ TemplateGame.Play.preload = function() {
 *
 * It is the state where majority of the functionality occurs 'in-game' occurs.
 */
-
 /**
 * This create method is executed when a Kiwi state has finished loading
 * any resources that were required to load.
@@ -246,7 +245,10 @@ TemplateGame.Play.update = function () {
     for (var i = players.length - 1; i >= 0; i--) {
       var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, players[i].box.bounds)
       if (overlapped.result) {
-        players[i].destroy()
+        window.killed = true
+        window.socket.emit('kill', {
+          id: Object.keys(window.players)[i]
+        })
       }
     }
   }
