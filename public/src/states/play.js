@@ -115,7 +115,7 @@ TemplateGame.Play.shootBall = function () {
 
   // Revive the ball
   // This makes the ball "alive"
-  this.revive(ball)
+  ball.alive = false
 
   // Set the ball position to the player position.
   var ballOffsetX = ball.width * 0.5
@@ -123,14 +123,72 @@ TemplateGame.Play.shootBall = function () {
   var playerOffsetX = this.player.width * 0.5
   var playerOffsetY = this.player.height * 0.5
   this.centerPoint = new Kiwi.Geom.Point(this.player.x + playerOffsetX, this.player.y + playerOffsetY)
-  ball.x = this.centerPoint.x - ballOffsetX
-  ball.y = this.centerPoint.y - ballOffsetY
-
   ball.rotation = angle - Math.PI / 2
+  ball.x = this.centerPoint.x - ballOffsetX + Math.cos(ball.rotation) * 40
+  ball.y = this.centerPoint.y - ballOffsetY + Math.sin(ball.rotation) * 40
+
 
   // Shoot it in the right direction
   ball.physics.velocity.x = Math.cos(ball.rotation) * this.BALL_SPEED
   ball.physics.velocity.y = Math.sin(ball.rotation) * this.BALL_SPEED
+  window.socket.emit('balllaunch', {
+    id: window.socket.id,
+    x: ball.x,
+    y: ball.y,
+    rotation: ball.rotation,
+    velocity: {
+      x: ball.physics.velocity.x,
+      y: ball.physics.velocity.y
+    }
+  })
+}
+
+TemplateGame.Play.shootBallFromSocket = function (data) {
+  // Get a dead ball from the pool
+  var ball = this.getFirstBall(true)
+  console.log('Shot ball')
+  console.log(ball)
+  // If there aren't any balls available then don't shoot
+  if (ball === null || ball === undefined) return
+
+  ball.alive = false
+
+  // Set the ball position to the player position.
+  ball.x = data.x
+  ball.y = data.y
+
+  ball.rotation = data.rotation
+
+  // Shoot it in the right direction
+  ball.physics.velocity.x = data.velocity.x
+  ball.physics.velocity.y = data.velocity.y
+}
+
+TemplateGame.Play.pickUpBall = function () {
+  var ball = this.getFirstBall(false)
+  var playerOffsetX = this.player.width * 0.5
+  var playerOffsetY = this.player.height * 0.5
+  var ballOffsetX = ball.width * 0.5
+  var ballOffsetY = ball.height * 0.5
+  this.centerPoint = new Kiwi.Geom.Point(this.player.x + playerOffsetX - ballOffsetX, this.player.y + playerOffsetY - ballOffsetY)
+  if (ball !== null) {
+    var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, this.player.box.bounds)
+    if (overlapped.result) {
+      var vel = ball.physics.velocity
+      var stopped = (vel.x === 0 && vel.y === 0)
+      if (!ball.alive && stopped) {
+        // socket to remove ball for other players
+        console.log("Picked up ball")
+        window.socket.emit('balltaken', {
+          id: window.socket.id
+        })
+        ball.alive = true
+      }
+      ball.x = this.centerPoint.x
+      ball.y = this.centerPoint.y
+      return true
+    }
+  }
 }
 
 TemplateGame.Play.getFirstBall = function (alive) {
@@ -142,10 +200,6 @@ TemplateGame.Play.getFirstBall = function (alive) {
     }
   }
   return null
-}
-
-TemplateGame.Play.revive = function (ball) {
-  ball.alive = true
 }
 
 TemplateGame.Play.checkBallPosition = function (ball) {
@@ -231,8 +285,11 @@ TemplateGame.Play.update = function () {
   }
   angle = this.angleToPointer() + Math.PI / 2
 
-  if (this.game.input.mouse.isDown) {
+  if (this.game.input.mouse.isDown) !== null) {
     this.shootBall()
+    console.log("Shoot")
+  } else {
+    this.pickUpBall()
   }
 
   var timeOut = false
