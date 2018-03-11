@@ -17,12 +17,12 @@ TemplateGame.Play.create = function () {
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 50 // pixels/second
   this.NUMBER_OF_BALLS = 1
-  this.game.stage.createDebugCanvas()
+  // this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
-  this.player.y = this.game.stage.height * 0.5 - this.player.height * 0.5
-  this.player.x = this.game.stage.width * 0.5 - this.player.width * 0.5
+  this.player.y = this.game.stage.height * Math.random()
+  this.player.x = this.game.stage.width * Math.random()
   this.addChild(this.player)
   this.player.animation.play('run')
 
@@ -32,8 +32,8 @@ TemplateGame.Play.create = function () {
   for (var i = 0; i < NUMBER_OF_PLAYERS; i++) {
     var npc = new Kiwi.GameObjects.Sprite(this, this.textures.enemy, 36, 36)
     npc.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
-    npc.y = this.game.stage.height * Math.random()
-    npc.x = this.game.stage.width * Math.random()
+    npc.y = -1000
+    npc.x = -1000
     this.playerPool.addChild(npc)
     npc.animation.play('run')
   }
@@ -148,25 +148,46 @@ TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
   // Debug - clear canvas from last frame.
-  this.game.stage.clearDebugCanvas()
+  // this.game.stage.clearDebugCanvas()
 
+  var playerMoved = false
   // Move the player with the arrow keys.
   if (this.leftKey.isDown) {
     this.player.x -= this.step
+    playerMoved = true
   }
   if (this.rightKey.isDown) {
     this.player.x += this.step
+    playerMoved = true
   }
   if (this.upKey.isDown) {
     this.player.y -= this.step
+    playerMoved = true
   }
   if (this.downKey.isDown) {
     this.player.y += this.step
+    playerMoved = true
   }
   this.player.rotation = this.angleToPointer() + Math.PI / 2
 
+  if (playerMoved) {
+    window.socket.emit('playermove', {
+      id: window.socket.id,
+      x: this.player.x,
+      y: this.player.y
+    })
+    console.log("OUT:", this.player.x, this.player.y)
+  }
+
   if (this.game.input.mouse.isDown) {
     this.shootBall()
+  }
+
+  var playerIndex = 0
+  for (let id in window.players) {
+    this.playerPool.members[playerIndex].x = window.players[id].x
+    this.playerPool.members[playerIndex].y = window.players[id].y
+    playerIndex += 1
   }
 
   this.ballPool.forEach(this, this.checkBallPosition)
@@ -192,5 +213,5 @@ TemplateGame.Play.update = function () {
   this.game.cameras.defaultCamera.transform.y = -1 * this.player.y + this.game.stage.height * 0.5 - playerOffsetY
 
   // Debug - draw debug canvas.
-  this.player.box.draw(this.game.stage.dctx)
+  // this.player.box.draw(this.game.stage.dctx)
 }
