@@ -41,6 +41,7 @@ TemplateGame.Loading.preload = function () {
   /**
   * Replace with your own in-game assets to load.
   **/
-  this.addImage('circle', 'assets/img/circle.png')
-  this.addSpriteSheet('icons', 'assets/img/kiwijs-icons.png', 100, 90)
+  this.addImage('circle', './assets/img/circle.png')
+  this.addSpriteSheet('player', './assets/img/george.png', 48, 48)
+  this.addSpriteSheet('enemy', './assets/img/enemy.png', 48, 48)
 }
