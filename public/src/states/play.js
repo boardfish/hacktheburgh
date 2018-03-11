@@ -127,7 +127,6 @@ TemplateGame.Play.shootBall = function () {
   ball.x = this.centerPoint.x - ballOffsetX + Math.cos(ball.rotation) * 40
   ball.y = this.centerPoint.y - ballOffsetY + Math.sin(ball.rotation) * 40
 
-
   // Shoot it in the right direction
   ball.physics.velocity.x = Math.cos(ball.rotation) * this.BALL_SPEED
   ball.physics.velocity.y = Math.sin(ball.rotation) * this.BALL_SPEED
@@ -178,7 +177,7 @@ TemplateGame.Play.pickUpBall = function () {
       var stopped = (vel.x === 0 && vel.y === 0)
       if (!ball.alive && stopped) {
         // socket to remove ball for other players
-        console.log("Picked up ball")
+        console.log('Picked up ball')
         window.socket.emit('balltaken', {
           id: window.socket.id
         })
@@ -244,8 +243,8 @@ TemplateGame.Play.update = function () {
   var playerMoved = false
   if (this.checkCollision(this.leftKey)) {
     this.player.x -= this.step
-		playerMoved = true
-		this.player.animation.play('runleft')
+    playerMoved = true
+    this.player.animation.play('runleft')
     if (!this.checkCollision(this.leftKey)) {
       this.player.x += this.step
     }
@@ -254,8 +253,8 @@ TemplateGame.Play.update = function () {
   }
   if (this.checkCollision(this.rightKey)) {
     this.player.x += this.step
-		playerMoved = true
-		this.player.animation.play('runright')
+    playerMoved = true
+    this.player.animation.play('runright')
     if (!this.checkCollision(this.rightKey)) {
       this.player.x -= this.step
     }
@@ -264,8 +263,8 @@ TemplateGame.Play.update = function () {
   }
   if (this.checkCollision(this.upKey)) {
     this.player.y -= this.step
-		playerMoved = true
-		this.player.animation.play('runup')
+    playerMoved = true
+    this.player.animation.play('runup')
     if (!this.checkCollision(this.upKey)) {
       this.player.y += this.step
     }
@@ -291,7 +290,7 @@ TemplateGame.Play.update = function () {
     })
     // console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
-	angle = this.angleToPointer() + Math.PI / 2
+  angle = this.angleToPointer() + Math.PI / 2
 
   if (playerMoved) {
     window.socket.emit('playermove', {
@@ -305,7 +304,7 @@ TemplateGame.Play.update = function () {
 
   if (this.game.input.mouse.isDown) {
     this.shootBall()
-    console.log("Shoot")
+    console.log('Shoot')
   } else {
     this.pickUpBall()
   }
