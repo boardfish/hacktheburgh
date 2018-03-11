@@ -208,11 +208,11 @@ TemplateGame.Play.checkBallPosition = function (ball) {
 
   var oldVelX = ball.physics.velocity.x
   var newVelX = oldVelX - Math.cos(ball.rotation)
-  ball.physics.velocity.x = newVelX <= 1 && newVelX >= -1 ? 0 : newVelX
+  ball.physics.velocity.x = newVelX <= 2 && newVelX >= -2 ? 0 : newVelX
 
   var oldVelY = ball.physics.velocity.y
   var newVelY = oldVelY - Math.sin(ball.rotation)
-  ball.physics.velocity.y = newVelY <= 1 && newVelY >= -1 ? 0 : newVelY
+  ball.physics.velocity.y = newVelY <= 2 && newVelY >= -2 ? 0 : newVelY
 
   var vel = ball.physics.velocity
   if (vel.x === 0 && vel.y === 0) {
@@ -326,10 +326,24 @@ TemplateGame.Play.update = function () {
     }
   }
 if(ball!=undefined){
-  if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )){
-    ball.physics.velocity.x=0
-    ball.physics.velocity.y=0
+
+
+  if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )
+      && Math.abs(ball.physics.velocity.x) > Math.abs(ball.physics.velocity.y)){
+
+    //ball.physics.velocity.x = 0;
+    //ball.physics.velocity.y = 0;
+      ball.physics.velocity.x = -ball.physics.velocity.x
+
+    }
+
+    //}
+    else if (this.tilemap.layers[2].physics.overlapsTiles( ball, true )
+    && Math.abs(ball.physics.velocity.y) > Math.abs(ball.physics.velocity.x)) {
+      ball.physics.velocity.y = -ball.physics.velocity.y
+
   }
+
 }
 
 
