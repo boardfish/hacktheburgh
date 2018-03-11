@@ -235,6 +235,7 @@ TemplateGame.Play.update = function () {
     this.shootBall()
   }
 
+  var timeOut = false
   var playerIndex = 0
   for (let id in window.players) {
     this.playerPool.members[playerIndex].x = window.players[id].x
@@ -258,6 +259,9 @@ TemplateGame.Play.update = function () {
         window.socket.emit('kill', {
           id: Object.keys(window.players)[i]
         })
+        this.playerPool.members[i].destroy()
+        delete window.players[Object.keys(window.players)[i]]
+
       }
     }
   }
