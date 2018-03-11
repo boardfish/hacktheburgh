@@ -6,6 +6,7 @@ TemplateGame.Play = new Kiwi.State('Play')
 TemplateGame.Play.preload = function() {
 	this.addJSON('tilemap', 'tilemap.json');
 	this.addSpriteSheet('tiles', 'tileset.png', 32, 32);
+  this.addAudio('music', 'throw.mp3');
 }
 
 /**
@@ -26,6 +27,10 @@ this.tilemap.scale = 2
   this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
   // this.game.stage.createDebugCanvas()
+
+  //create addAudio
+  this.music = new Kiwi.Sound.Audio(this.game, 'music', 1, false);
+
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.scale = 0.6
@@ -108,6 +113,8 @@ TemplateGame.Play.shootBall = function () {
 
   // Get a dead ball from the pool
   var ball = this.getFirstBall(false)
+
+  this.music.play();
 
   // If there aren't any balls available then don't shoot
   if (ball === null || ball === undefined) return
@@ -283,3 +290,4 @@ TemplateGame.Play.checkCollision = function (key) {
   }
   return key.isDown
 }
+var game = new Kiwi.Game('game-container', 'Play Music', state, gameOptions);
