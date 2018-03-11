@@ -22,13 +22,14 @@
     window.players = {}
     window.socket.on('playermove', function (data) {
       if (data.id !== socket.id) {
-        console.log("IN:", data.x, data.y)
+        console.log("IN:", data.x, data.y, data.rotation)
         if (window.players[data.id] === undefined) {
           console.log('NEW PLAYER')
           window.players[data.id] = {}
         }
         window.players[data.id].x = data.x
         window.players[data.id].y = data.y
+        window.players[data.id].rotation = data.rotation
       }
     })
   </script>

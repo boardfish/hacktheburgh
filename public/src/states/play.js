@@ -168,15 +168,20 @@ TemplateGame.Play.update = function () {
     this.player.y += this.step
     playerMoved = true
   }
+  var lastAngle = this.player.rotation
   this.player.rotation = this.angleToPointer() + Math.PI / 2
+  if (this.player.rotation !== lastAngle) {
+    playerMoved = true
+  }
 
   if (playerMoved) {
     window.socket.emit('playermove', {
       id: window.socket.id,
       x: this.player.x,
-      y: this.player.y
+      y: this.player.y,
+      rotation: this.player.rotation
     })
-    console.log("OUT:", this.player.x, this.player.y)
+    console.log('OUT:', this.player.x, this.player.y, this.player.rotation)
   }
 
   if (this.game.input.mouse.isDown) {
@@ -187,6 +192,7 @@ TemplateGame.Play.update = function () {
   for (let id in window.players) {
     this.playerPool.members[playerIndex].x = window.players[id].x
     this.playerPool.members[playerIndex].y = window.players[id].y
+    this.playerPool.members[playerIndex].rotation = window.players[id].rotation
     playerIndex += 1
   }
 
