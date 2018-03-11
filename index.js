@@ -30,6 +30,18 @@ io.on('connection', function (socket) {
        y: 600 * Math.random()
     })
   })
+  window.socket.on('kill', (data) => {
+    if (data.id === socket.id) {
+      window.socket.emit('playermove', {
+        x: data.x,
+        y: data.y,
+        rotation: 0
+      })
+      console.log('You were killed.')
+    } else {
+      console.log("Player", data.id, "was killed.")
+    }
+  })
 })
 
 http.listen(3000, function () {
