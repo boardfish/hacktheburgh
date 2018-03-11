@@ -25,7 +25,7 @@ this.tilemap.scale = 2
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
   this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
-  this.game.stage.createDebugCanvas()
+  // this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.scale = 0.6
@@ -51,8 +51,8 @@ this.tilemap.scale = 2
   for (var i = 0; i < NUMBER_OF_PLAYERS; i++) {
     var npc = new Kiwi.GameObjects.Sprite(this, this.textures.enemy, 36, 36)
     npc.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
-    npc.y = this.game.stage.height * Math.random()
-    npc.x = this.game.stage.width * Math.random()
+    npc.y = -1000
+    npc.x = -1000
     this.playerPool.addChild(npc)
     npc.animation.play('run')
 
@@ -175,7 +175,7 @@ TemplateGame.Play.update = function () {
   // this.checkCollision();
 
   // Debug - clear canvas from last frame.
-  this.game.stage.clearDebugCanvas()
+  // this.game.stage.clearDebugCanvas()
 
 
   // Move the player with the arrow keys.
@@ -213,6 +213,14 @@ TemplateGame.Play.update = function () {
     this.shootBall()
   }
 
+  var playerIndex = 0
+  for (let id in window.players) {
+    this.playerPool.members[playerIndex].x = window.players[id].x
+    this.playerPool.members[playerIndex].y = window.players[id].y
+    this.playerPool.members[playerIndex].rotation = window.players[id].rotation
+    playerIndex += 1
+  }
+
   this.ballPool.forEach(this, this.checkBallPosition)
 
   // Check if player is intersecting with ball.
@@ -244,7 +252,7 @@ if(ball!=undefined){
   this.game.cameras.defaultCamera.transform.y = -1 * this.player.y + this.game.stage.height * 0.5 - playerOffsetY
 
   // Debug - draw debug canvas.
-  this.player.box.draw(this.game.stage.dctx)
+  // this.player.box.draw(this.game.stage.dctx)
 }
 TemplateGame.Play.checkCollision = function (key) {
 	if(this.tilemap.layers[2].physics.overlapsTiles( this.player, true )){

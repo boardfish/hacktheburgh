@@ -3,14 +3,18 @@ var app = express()
 var http = require('http').Server(app)
 var io = require('socket.io')(http)
 
-app.use(express.static(process.cwd() + '/public'));
+app.use(express.static(process.cwd() + '/public'))
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html')
 })
 
 io.on('connection', function (socket) {
-  console.log('a user connected')
+  console.log('user connected')
+  socket.on('playermove', function (data) {
+    console.log('playermove: ', data.id, data.x, data.y)
+    io.emit('playermove', data)
+  })
   socket.on('disconnect', function () {
     console.log('user disconnected')
   })
