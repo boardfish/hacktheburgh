@@ -28,11 +28,15 @@ this.tilemap.scale = 2
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.scale = 0.6
-  this.player.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
-  this.player.y = this.game.stage.height * Math.random()
-  this.player.x = this.game.stage.width * Math.random()
-  this.addChild(this.player)
-  this.player.animation.play('run')
+  this.player.animation.add('idle', [0], 0.1, true, false)
+  this.player.animation.add('rundown', [0, 4, 8, 12], 0.1, true, false)
+  this.player.animation.add('runup', [2, 6, 10, 14], 0.1, true, false)
+  this.player.animation.add('runleft', [1, 5, 9, 13], 0.1, true, false)
+  this.player.animation.add('runright', [3, 7, 11, 15], 0.1, true, false)
+  this.player.y = this.game.stage.height * 0.5 - this.player.height * 0.5
+  this.player.x = this.game.stage.width * 0.5 - this.player.width * 0.5
+
+  this.player.animation.play('idle')
 
   for( var i = 0; i < this.tilemap.layers.length; i++ ) {
 			this.addChild( this.tilemap.layers[ i ] );
@@ -229,7 +233,7 @@ TemplateGame.Play.angleToPointer = function () {
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
-
+  this.player.animation.play('idle')
   // this.checkCollision();
 
   // Debug - clear canvas from last frame.
@@ -240,7 +244,8 @@ TemplateGame.Play.update = function () {
   if (this.checkCollision(this.leftKey)) {
     this.player.x -= this.step
 		playerMoved = true
-		if (!this.checkCollision(this.leftKey)) {
+		this.player.animation.play('runleft')
+    if (!this.checkCollision(this.leftKey)) {
       this.player.x += this.step
     }
     key=0
@@ -248,7 +253,8 @@ TemplateGame.Play.update = function () {
   if (this.checkCollision(this.rightKey)) {
     this.player.x += this.step
 		playerMoved = true
-		if (!this.checkCollision(this.rightKey)) {
+		this.player.animation.play('runright')
+    if (!this.checkCollision(this.rightKey)) {
       this.player.x -= this.step
     }
     key=1
@@ -256,7 +262,8 @@ TemplateGame.Play.update = function () {
   if (this.checkCollision(this.upKey)) {
     this.player.y -= this.step
 		playerMoved = true
-		if (!this.checkCollision(this.upKey)) {
+		this.player.animation.play('runup')
+    if (!this.checkCollision(this.upKey)) {
       this.player.y += this.step
     }
     key=2
@@ -264,7 +271,8 @@ TemplateGame.Play.update = function () {
   if (this.checkCollision(this.downKey)) {
     this.player.y += this.step
 		playerMoved = true
-	  if (!this.checkCollision(this.downKey)) {
+		this.player.animation.play('rundown')
+    if (!this.checkCollision(this.downKey)) {
       this.player.y -= this.step
     }
     key=3
