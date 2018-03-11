@@ -16,20 +16,29 @@
   <script>
     window.socket = io()
     socket.on('connect', () => {
-      console.log(socket.id)
+      console.log("CONNECT:", socket.id)
+    })
+    socket.on('kill', (data) => {
+      console.log("KILL:", data.id)
+      io.emit('playermove', {
+        id: data.id,
+        x: 800 * Math.random(),
+        y: 600 * Math.random()
+      })
     })
 
     window.players = {}
     window.socket.on('playermove', function (data) {
-      if (data.id !== socket.id) {
+      if (data.id !== socket.id || window.killed === true) {
         console.log("IN:", data.x, data.y, data.rotation)
         if (window.players[data.id] === undefined) {
-          console.log('NEW PLAYER')
+          console.log('NEW PLAYER:', data.id)
           window.players[data.id] = {}
         }
         window.players[data.id].x = data.x
         window.players[data.id].y = data.y
         window.players[data.id].rotation = data.rotation
+        window.killed = false
       }
     })
   </script>
