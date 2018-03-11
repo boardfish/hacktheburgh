@@ -2,6 +2,11 @@ var TemplateGame = TemplateGame || {}
 
 TemplateGame.Play = new Kiwi.State('Play')
 
+TemplateGame.Play.preload = function() {
+	this.addJSON('tilemap', 'tilemap.json');
+	this.addSpriteSheet('tiles', 'tileset.png', 32, 32);
+}
+
 /**
 * The PlayState in the core state that is used in the game.
 *
@@ -13,18 +18,29 @@ TemplateGame.Play = new Kiwi.State('Play')
 * any resources that were required to load.
 */
 TemplateGame.Play.create = function () {
-  Kiwi.State.prototype.create.call(this)
+  Kiwi.State.prototype.preload.call(this);
+this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
-  this.BALL_SPEED = 50 // pixels/second
+  this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
   // this.game.stage.createDebugCanvas()
 
   this.player = new Kiwi.GameObjects.Sprite(this, this.textures.player, 36, 36)
   this.player.animation.add('run', [2, 6, 10, 14], 0.1, true, false)
-  this.player.y = this.game.stage.height * Math.random()
-  this.player.x = this.game.stage.width * Math.random()
-  this.addChild(this.player)
+  this.player.y = this.game.stage.height * 0.5 - this.player.height * 0.5
+  this.player.x = this.game.stage.width * 0.5 - this.player.width * 0.5
+
   this.player.animation.play('run')
+
+  for( var i = 0; i < this.tilemap.layers.length; i++ ) {
+			this.addChild( this.tilemap.layers[ i ] );
+		}
+
+		for(var i = 2; i < this.tilemap.tileTypes.length; i++) {
+			this.tilemap.tileTypes[i].allowCollisions = Kiwi.Components.ArcadePhysics.ANY;
+		}
+      this.addChild(this.player)
+
 
   const NUMBER_OF_PLAYERS = 5
   this.playerPool = new Kiwi.Group(this)
@@ -36,6 +52,7 @@ TemplateGame.Play.create = function () {
     npc.x = -1000
     this.playerPool.addChild(npc)
     npc.animation.play('run')
+
   }
 
   // Set the pivot point to the center of the player
@@ -58,6 +75,8 @@ TemplateGame.Play.create = function () {
 
     // Set its initial state to "dead".
     ball.alive = false
+
+
   }
 
   this.step = 3
@@ -67,6 +86,8 @@ TemplateGame.Play.create = function () {
   this.rightKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.RIGHT, true)
   this.leftKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.LEFT, true)
   this.mouse = this.game.input.mouse
+
+  this.player.y += 100*this.step
 }
 
 TemplateGame.Play.shootBall = function () {
@@ -122,7 +143,7 @@ TemplateGame.Play.revive = function (ball) {
 TemplateGame.Play.checkBallPosition = function (ball) {
   if (ball.x > this.game.stage.width || ball.x < 0 ||
       ball.y > this.game.stage.height || ball.y < 0) {
-    ball.alive = false
+    //ball.alive = false
   }
 
   var oldVelX = ball.physics.velocity.x
@@ -147,26 +168,41 @@ TemplateGame.Play.angleToPointer = function () {
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
 
+
+  // this.checkCollision();
+
   // Debug - clear canvas from last frame.
   // this.game.stage.clearDebugCanvas()
 
-  var playerMoved = false
+
   // Move the player with the arrow keys.
-  if (this.leftKey.isDown) {
+  if (this.checkCollision(this.leftKey)) {
     this.player.x -= this.step
-    playerMoved = true
+    if (!this.checkCollision(this.leftKey)) {
+      this.player.x += this.step
+    }
+    key=0
   }
-  if (this.rightKey.isDown) {
+  if (this.checkCollision(this.rightKey)) {
     this.player.x += this.step
-    playerMoved = true
+    if (!this.checkCollision(this.rightKey)) {
+      this.player.x -= this.step
+    }
+    key=1
   }
-  if (this.upKey.isDown) {
+  if (this.checkCollision(this.upKey)) {
     this.player.y -= this.step
-    playerMoved = true
+    if (!this.checkCollision(this.upKey)) {
+      this.player.y += this.step
+    }
+    key=2
   }
-  if (this.downKey.isDown) {
+  if (this.checkCollision(this.downKey)) {
     this.player.y += this.step
-    playerMoved = true
+      if (!this.checkCollision(this.downKey)) {
+        this.player.y -= this.step
+      }
+    key=3
   }
   var lastAngle = this.player.rotation
   this.player.rotation = this.angleToPointer() + Math.PI / 2
@@ -210,6 +246,16 @@ TemplateGame.Play.update = function () {
       }
     }
   }
+if(ball!=undefined){
+  console.log("defined")
+  if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )){
+    console.log("Intersect")
+    ball.physics.velocity.x=0
+    ball.physics.velocity.y=0
+  }
+}
+
+
 
   var playerOffsetX = this.player.width * 0.5
   var playerOffsetY = this.player.height * 0.5
@@ -220,4 +266,11 @@ TemplateGame.Play.update = function () {
 
   // Debug - draw debug canvas.
   // this.player.box.draw(this.game.stage.dctx)
+}
+TemplateGame.Play.checkCollision = function (key) {
+	if(this.tilemap.layers[2].physics.overlapsTiles( this.player, true )){
+    return false
+
+  }
+  return key.isDown
 }
