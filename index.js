@@ -18,6 +18,14 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('user disconnected')
   })
+  socket.on('kill', (data) => {
+    console.log('kill:', data.id)
+    io.emit('kill', {
+       id: data.id,
+       x: 800 * Math.random(),
+       y: 600 * Math.random()
+    })
+  })
 })
 
 http.listen(3000, function () {
