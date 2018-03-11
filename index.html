@@ -27,7 +27,7 @@
 
     window.players = {}
     window.socket.on('playermove', function (data) {
-      if (data.id !== socket.id || window.killed === true) {
+      if (data.id !== socket.id) {
         if (window.players[data.id] === undefined) {
           console.log('NEW PLAYER:', data.id)
           window.players[data.id] = {}
@@ -43,5 +43,8 @@
         location.reload()
       }
     })
+    //socket.on('disconnect', () => {
+    //  socket.open()
+    //})
   </script>
 </body>
