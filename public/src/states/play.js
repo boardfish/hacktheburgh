@@ -20,7 +20,7 @@ TemplateGame.Play.create = function () {
   Kiwi.State.prototype.preload.call(this);
 this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textures.tiles);
   this.SHOT_DELAY = 100 // milliseconds (10 balls/second)
-  this.BALL_SPEED = 50 // pixels/second
+  this.BALL_SPEED = 60 // pixels/second
   this.NUMBER_OF_BALLS = 1
   // this.game.stage.createDebugCanvas()
 
@@ -40,6 +40,7 @@ this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textur
 		}
       this.addChild(this.player)
 
+
   const NUMBER_OF_PLAYERS = 5
   this.playerPool = new Kiwi.Group(this)
   this.addChild(this.playerPool)
@@ -50,6 +51,7 @@ this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textur
     npc.x = -1000
     this.playerPool.addChild(npc)
     npc.animation.play('run')
+
   }
 
   // Set the pivot point to the center of the player
@@ -72,6 +74,8 @@ this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textur
 
     // Set its initial state to "dead".
     ball.alive = false
+
+
   }
 
   this.step = 3
@@ -81,6 +85,8 @@ this.tilemap = new Kiwi.GameObjects.Tilemap.TileMap(this, 'tilemap', this.textur
   this.rightKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.RIGHT, true)
   this.leftKey = this.game.input.keyboard.addKey(Kiwi.Input.Keycodes.LEFT, true)
   this.mouse = this.game.input.mouse
+
+  this.player.y += 100*this.step
 }
 
 TemplateGame.Play.shootBall = function () {
@@ -190,7 +196,7 @@ TemplateGame.Play.getFirstBall = function (alive) {
 TemplateGame.Play.checkBallPosition = function (ball) {
   if (ball.x > this.game.stage.width || ball.x < 0 ||
       ball.y > this.game.stage.height || ball.y < 0) {
-    ball.alive = false
+    //ball.alive = false
   }
 
   var oldVelX = ball.physics.velocity.x
@@ -219,6 +225,7 @@ TemplateGame.Play.angleToPointer = function () {
 
 TemplateGame.Play.update = function () {
   Kiwi.State.prototype.update.call(this)
+
 
   // this.checkCollision();
 
@@ -311,6 +318,16 @@ TemplateGame.Play.update = function () {
       }
     }
   }
+if(ball!=undefined){
+  console.log("defined")
+  if(this.tilemap.layers[2].physics.overlapsTiles( ball, true )){
+    console.log("Intersect")
+    ball.physics.velocity.x=0
+    ball.physics.velocity.y=0
+  }
+}
+
+
 
   var playerOffsetX = this.player.width * 0.5
   var playerOffsetY = this.player.height * 0.5
