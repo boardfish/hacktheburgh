@@ -258,7 +258,6 @@ TemplateGame.Play.update = function () {
         window.socket.emit('kill', {
           id: Object.keys(window.players)[i]
         })
-        ball.alive = false
       }
     }
   }
