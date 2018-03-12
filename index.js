@@ -22,6 +22,9 @@ io.on('connection', function (socket) {
     console.log(data)
     console.log('user disconnected')
   })
+  socket.on('balllaunch', function (data) {
+    io.emit('balllaunch', data)
+  })
 })
 
 http.listen(3000, function () {

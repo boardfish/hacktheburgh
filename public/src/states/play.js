@@ -94,6 +94,13 @@ TemplateGame.Play.create = function () {
   this.mouse = this.game.input.mouse
 
   this.player.y += 100 * this.step
+
+  var self = this
+  window.socket.on('balllaunch', function (data) {
+    if (data.id !== window.socket.id) {
+      self.shootBallFromSocket(data)
+    }
+  })
 }
 
 TemplateGame.Play.shootBall = function () {
@@ -144,7 +151,7 @@ TemplateGame.Play.shootBall = function () {
 
 TemplateGame.Play.shootBallFromSocket = function (data) {
   // Get a dead ball from the pool
-  var ball = this.getFirstBall(true)
+  var ball = this.getFirstBall(false)
   console.log('Shot ball')
   console.log(ball)
   // If there aren't any balls available then don't shoot
@@ -312,9 +319,11 @@ TemplateGame.Play.update = function () {
   var timeOut = false
   var playerIndex = 0
   for (let id in window.players) {
-    this.playerPool.members[playerIndex].x = window.players[id].x
-    this.playerPool.members[playerIndex].y = window.players[id].y
-    this.playerPool.members[playerIndex].rotation = window.players[id].rotation
+    if (this.playerPool.members[playerIndex] !== undefined) {
+      this.playerPool.members[playerIndex].x = window.players[id].x
+      this.playerPool.members[playerIndex].y = window.players[id].y
+      this.playerPool.members[playerIndex].rotation = window.players[id].rotation
+    }
     playerIndex += 1
   }
 
@@ -327,7 +336,7 @@ TemplateGame.Play.update = function () {
 
     for (var i = players.length - 1; i >= 0; i--) {
       var overlapped = Kiwi.Geom.Intersect.rectangleToRectangle(ball.box.bounds, players[i].box.bounds)
-      if (overlapped.result) {
+      if (overlapped.result && (Math.abs(ball.physics.velocity.x) > 0 || Math.abs(ball.physics.velocity.y) > 0)) {
         console.log('Emitted kill for', Object.keys(window.players)[i])
         window.killed = true
         window.socket.emit('kill', {
@@ -339,7 +348,7 @@ TemplateGame.Play.update = function () {
       }
     }
   }
-  if (ball != undefined) {
+  if (ball !== null) {
     if (this.tilemap.layers[2].physics.overlapsTiles(ball, true)
       && Math.abs(ball.physics.velocity.x) > Math.abs(ball.physics.velocity.y)) {
     // ball.physics.velocity.x = 0;
